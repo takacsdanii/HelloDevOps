@@ -1,0 +1,12 @@
+[
+  {
+    "ContainingType": "HelloBackend.Controllers.MessageController",
+    "Method": "Get",
+    "RelativePath": "api/messages",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
