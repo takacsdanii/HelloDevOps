@@ -1,0 +1,1 @@
+docker build -t hello-frontend:latest -f HelloFrontend/Dockerfile .
