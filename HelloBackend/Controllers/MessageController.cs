@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using HelloBackend.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 
 namespace HelloBackend.Controllers
 {
@@ -7,11 +9,38 @@ namespace HelloBackend.Controllers
     [ApiController]
     public class MessageController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Get()
+        private IMessageService _messageService;
+
+        public MessageController(IMessageService messageService)
         {
-            var message = "Hello DevOps World!";
+            _messageService = messageService;
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetMessage(int id)
+        {
+            var message = _messageService.GetMessage(id);
+            return message != null ? Ok(message) : NotFound();
+        }
+
+        [HttpGet]
+        public IEnumerable GetMessages(string? message)
+        {
+            return _messageService.GetMessages(message);
+        }
+
+        [HttpPost]
+        public IActionResult AddMessage(string text)
+        {
+            var message = _messageService.AddMessage(text);
             return Ok(message);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteMessage(int id)
+        {
+            var message = _messageService.RemoveMessage(id);
+            return message != null ? Ok(message) : NotFound();
         }
     }
 }
