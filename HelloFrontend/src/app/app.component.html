@@ -1,1 +1,11 @@
-<h1>Message: {{ message }}</h1>
+<h1>Messages:</h1>
+<ul>
+  <li *ngFor="let message of messages">
+    {{ message.text }}
+    <button (click)="deleteMessage(message.id)">Delete</button>
+  </li>
+</ul>
+<div>
+    <input type="text" [(ngModel)]="newMessageText">
+    <button (click)="addMessage(newMessageText)">Send</button>
+</div>
