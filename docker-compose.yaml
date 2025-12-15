@@ -9,7 +9,7 @@ services:
         - SA_PASSWORD=Dani2002
       ports:
         - "1433:1433"
-      depends on:
+      depends_on:
         - sqlserver
 
   hello-backend:
