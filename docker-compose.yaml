@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  sqlserver:
+      image: mcr.microsoft.com/mssql/server:2022-latest
+      container_name: sqlserver
+      environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=Dani2002
+      ports:
+        - "1433:1433"
+      depends on:
+        - sqlserver
+
   hello-backend:
     image: hello-backend:latest
     container_name: hello-backend-container
