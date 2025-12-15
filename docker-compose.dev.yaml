@@ -1,0 +1,28 @@
+services:
+  devdb:
+      image: mcr.microsoft.com/mssql/server:2022-latest
+      container_name: devdb
+      environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=Dani2002
+      ports:
+        - "1434:1433"
+
+  hello-backend-dev:
+    image: hello-backend:latest
+    container_name: hello-backend-dev-container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8088:8080"
+      - "8089:8081"
+    depends_on:
+      - devdb
+
+  hello-frontend-dev:
+    image: hello-frontend-dev:latest
+    container_name: hello-frontend-dev-container
+    ports:
+      - "8081:80"
+    depends_on:
+      - hello-backend-dev
