@@ -54,7 +54,7 @@ spec:
                 // 3. Docker Build és Push (Bejelentkezéssel)
                 container('docker') {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        // Biztonságos bejelentkezés
+                        // bejelentkezés
                         sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin"
                         
                         // Frontend image építés és feltöltés
