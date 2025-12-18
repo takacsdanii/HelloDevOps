@@ -1,6 +1,7 @@
 pipeline {
     agent {
         kubernetes {
+            cloud 'BevDevOps-K8s-Cloud'
             yaml """
 apiVersion: v1
 kind: Pod
