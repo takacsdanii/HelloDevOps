@@ -47,9 +47,9 @@ spec:
             steps {
                 container('helm-kubectl') {
                     sh """
-                        helm upgrade --install dev-stack ./charts/bevdevops-chart \
+                        helm upgrade --install dev-stack ./k8s/bevdevops-chart \
                         --namespace dev \
-                        -f ./charts/bevdevops-chart/values.yaml
+                        -f ./k8s/bevdevops-chart/values.yaml
                     """
                 }
             }
@@ -62,9 +62,9 @@ spec:
             steps {
                 container('helm-kubectl') {
                     sh """
-                        helm upgrade --install prod-stack ./charts/bevdevops-chart \
+                        helm upgrade --install prod-stack ./k8s/bevdevops-chart \
                         --namespace prod \
-                        -f ./charts/bevdevops-chart/values-prod.yaml
+                        -f ./k8s/bevdevops-chart/values-prod.yaml
                     """
                 }
             }
