@@ -15,47 +15,57 @@ spec:
     image: node:20
     command: ['cat']
     tty: true
-  - name: sonar-scanner
-    image: sonarsource/sonar-scanner-cli:latest
+  - name: helm-kubectl
+    image: dtzar/helm-kubectl:latest
     command: ['cat']
     tty: true
 """
         }
     }
     stages {
-       stage('HelloFrontend Analysis') {
+        stage('CI - Build Frontend') {
             steps {
-                container('sonar-scanner') {
+                container('node-js') {
                     dir('HelloFrontend') {
-                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                            sh "curl -v http://10.100.162.100:9000/api/v2/analysis/version || true"
-                            
-                            sh """
-                                sonar-scanner \
-                                -Dsonar.projectKey=hello-frontend \
-                                -Dsonar.sources=src \
-                                -Dsonar.host.url=http://10.100.162.100:9000 \
-                                -Dsonar.token=$SONAR_TOKEN
-                            """
-                        }
+                        sh "npm install"
+                        sh "npm run build"
                     }
                 }
             }
         }
-        stage('HelloBackend Analysis') {
+        stage('CI - Build & Test Backend') {
             steps {
                 container('dotnet-sdk') {
                     dir('HelloBackend') {
-                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                            withSonarQubeEnv('BevDevOps-SonarQube-Server') {
-                                sh "dotnet tool install --global dotnet-sonarscanner || true"
-                                sh "export PATH='\$PATH:\$HOME/.dotnet/tools' && \
-                                    dotnet sonarscanner begin /k:hello-backend /d:sonar.token=\$SONAR_TOKEN /d:sonar.host.url=\$SONAR_HOST_URL && \
-                                    dotnet build HelloBackend.sln && \
-                                    dotnet sonarscanner end /d:sonar.token=\$SONAR_TOKEN"
-                            }
-                        }
+                        sh "dotnet build HelloBackend.sln"
+                        sh "dotnet test HelloBackend.sln"
                     }
+                }
+            }
+        }
+        stage('CD - Deploy to Dev') {
+            steps {
+                container('helm-kubectl') {
+                    sh """
+                        helm upgrade --install dev-stack ./charts/bevdevops-chart \
+                        --namespace dev \
+                        -f ./charts/bevdevops-chart/values.yaml
+                    """
+                }
+            }
+        }
+        stage('Promote to Prod?') {
+            input {
+                message "Mehet az élesítés (Production)?"
+                ok "Igen, mehet!"
+            }
+            steps {
+                container('helm-kubectl') {
+                    sh """
+                        helm upgrade --install prod-stack ./charts/bevdevops-chart \
+                        --namespace prod \
+                        -f ./charts/bevdevops-chart/values-prod.yaml
+                    """
                 }
             }
         }
