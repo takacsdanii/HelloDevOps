@@ -1,0 +1,24 @@
+apiVersion: apps/v1      
+kind: Deployment        
+metadata:
+  name: bevdevops-db-{{ .Release.Name }}     
+spec:
+  replicas: {{ .Values.db.replicaCount }}            
+  selector:
+    matchLabels:
+      app: bevdevops-db-server-{{ .Release.Name }}
+  template:              
+    metadata:
+      labels:
+        app: bevdevops-db-server-{{ .Release.Name }}
+    spec:
+      containers:
+      - name: bevdevops-db-container-{{ .Release.Name }}
+        image: "{{ .Values.db.image }}"
+        ports:
+        - containerPort: 1433 
+        env:                  
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: "{{ .Values.db.password }}"

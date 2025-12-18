@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bevdevops-backend-{{ .Release.Name }}
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: bevdevops-backend-server-{{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: bevdevops-backend-server-{{ .Release.Name }}
+    spec:
+      containers:
+      - name: bevdevops-backend-container-{{ .Release.Name }}
+        image: "{{ .Values.backend.image }}:{{ .Values.backend.tag }}"
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "{{ .Values.backend.environment }}"
+        - name: ConnectionStrings__DefaultConnection
+          value: "Server=bevdevops-db-{{ .Release.Name }};Database=MyDatabase;User Id=sa;Password={{ .Values.db.password }};TrustServerCertificate=True;"
