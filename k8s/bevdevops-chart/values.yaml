@@ -3,7 +3,7 @@ global:
 
 db:
   image: takacsdanii/bevdevops-mssql-db:latest
-  password: "devdbpassword"
+  password: "DevDbPassword2025!"
   replicaCount: 1
 
 backend:

@@ -1,6 +1,6 @@
 db:
   image: takacsdanii/bevdevops-mssql-db:latest
-  password: "proddbpassword"
+  password: "ProdDbPassword2025!"
   replicaCount: 1
 
 backend:
