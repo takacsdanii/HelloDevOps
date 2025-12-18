@@ -9,4 +9,5 @@ spec:
     - protocol: TCP
       port: 80         
       targetPort: 8080
+      nodePort: {{ if eq .Values.backend.environment "Production" }}8090{{ else }}8088{{ end }}
   type: NodePort
