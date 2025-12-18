@@ -24,11 +24,19 @@ spec:
     }
     stages {
         stage('HelloFrontend Analysis') {
-            steps {
-                container('sonar-scanner') {
-                    dir('HelloFrontend') {
-                        withSonarQubeEnv('BevDevOps-SonarQube-Server') {
-                            sh "sonar-scanner -Dsonar.projectKey=hello-frontend -Dsonar.sources=src -Dsonar.host.url=http://sonarqube.sonarqube:9000"
+    steps {
+        container('sonar-scanner') {
+            dir('HelloFrontend') {
+                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                    withSonarQubeEnv('BevDevOps-SonarQube-Server') {
+                        sh """
+                          sonar-scanner \
+                            -Dsonar.projectKey=hello-frontend \
+                            -Dsonar.sources=src \
+                            -Dsonar.host.url=$SONAR_HOST_URL \
+                            -Dsonar.token=$SONAR_TOKEN
+                        """
+                            }
                         }
                     }
                 }
