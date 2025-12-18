@@ -5,12 +5,12 @@ db:
 
 backend:
   image: takacsdanii/bevdevops-backend
-  tag: v1.0.1
+  tag: latest
   replicaCount: 2
   environment: "Production"
 
 frontend:
   image: takacsdanii/bevdevops-frontend-prod
-  tag: v1.0.1
+  tag: latest
   replicaCount: 2
   environment: "Production"
