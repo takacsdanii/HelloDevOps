@@ -29,7 +29,7 @@ spec:
                     dir('HelloFrontend') {
                         withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
                             withSonarQubeEnv('BevDevOps-SonarQube-Server') {
-                                sh "sonar-scanner -Dsonar.projectKey=hello-frontend -Dsonar.sources=src -Dsonar.token=${SONAR_TOKEN}"
+                                sh "sonar-scanner -Dsonar.projectKey=hello-frontend -Dsonar.sources=src"
                             }
                         }
                     }
@@ -44,9 +44,9 @@ spec:
                             withSonarQubeEnv('BevDevOps-SonarQube-Server') {
                                 sh "dotnet tool install --global dotnet-sonarscanner || true"
                                 sh "export PATH='\$PATH:\$HOME/.dotnet/tools' && \
-                                    dotnet sonarscanner begin /k:hello-backend /d:sonar.token=${SONAR_TOKEN} /d:sonar.host.url=\$SONAR_HOST_URL && \
+                                    dotnet sonarscanner begin /k:hello-backend /d:sonar.token=\$SONAR_TOKEN /d:sonar.host.url=\$SONAR_HOST_URL && \
                                     dotnet build HelloBackend.sln && \
-                                    dotnet sonarscanner end /d:sonar.token=${SONAR_TOKEN}"
+                                    dotnet sonarscanner end /d:sonar.token=\$SONAR_TOKEN"
                             }
                         }
                     }
