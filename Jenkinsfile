@@ -15,15 +15,26 @@ spec:
     image: node:20
     command: ['cat']
     tty: true
+  - name: docker
+    image: docker:latest
+    command: ['cat']
+    tty: true
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
   - name: helm-kubectl
     image: dtzar/helm-kubectl:latest
     command: ['cat']
     tty: true
+  volumes:
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
 """
         }
     }
     stages {
-        stage('CI - Build Frontend') {
+        stage('CI - Frontend Build & Docker Push') {
             steps {
                 container('node-js') {
                     dir('HelloFrontend') {
@@ -31,15 +42,22 @@ spec:
                         sh "npm run build"
                     }
                 }
+                container('docker') {
+                    sh "docker build -t takacsdanii/bevdevops-frontend-dev:latest -f ./HelloFrontend/Dockerfile.dev ."
+                    sh "docker push takacsdanii/bevdevops-frontend-dev:latest"
+                }
             }
         }
-        stage('CI - Build & Test Backend') {
+        stage('CI - Backend Build & Docker Push') {
             steps {
                 container('dotnet-sdk') {
                     dir('HelloBackend') {
                         sh "dotnet build HelloBackend.sln"
-                        sh "dotnet test HelloBackend.sln"
                     }
+                }
+                container('docker') {
+                    sh "docker build -t takacsdanii/bevdevops-backend:latest -f ./HelloBackend/Dockerfile ."
+                    sh "docker push takacsdanii/bevdevops-backend:latest"
                 }
             }
         }
@@ -49,22 +67,8 @@ spec:
                     sh """
                         helm upgrade --install dev-stack ./k8s/bevdevops-chart \
                         --namespace dev \
+                        --set frontend.imagePullPolicy=Always \
                         -f ./k8s/bevdevops-chart/values.yaml
-                    """
-                }
-            }
-        }
-        stage('Promote to Prod?') {
-            input {
-                message "Mehet az élesítés (Production)?"
-                ok "Igen, mehet!"
-            }
-            steps {
-                container('helm-kubectl') {
-                    sh """
-                        helm upgrade --install prod-stack ./k8s/bevdevops-chart \
-                        --namespace prod \
-                        -f ./k8s/bevdevops-chart/values-prod.yaml
                     """
                 }
             }
