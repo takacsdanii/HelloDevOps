@@ -34,33 +34,41 @@ spec:
         }
     }
     stages {
-        stage('CI - Frontend Build & Docker Push') {
+        stage('CI - Build & Push Images') {
             steps {
+                // 1. Frontend fordítás
                 container('node-js') {
                     dir('HelloFrontend') {
                         sh "npm install"
                         sh "npm run build"
                     }
                 }
-                container('docker') {
-                    sh "docker build -t takacsdanii/bevdevops-frontend-dev:latest -f ./HelloFrontend/Dockerfile.dev ."
-                    sh "docker push takacsdanii/bevdevops-frontend-dev:latest"
-                }
-            }
-        }
-        stage('CI - Backend Build & Docker Push') {
-            steps {
+                
+                // 2. Backend fordítás
                 container('dotnet-sdk') {
                     dir('HelloBackend') {
                         sh "dotnet build HelloBackend.sln"
                     }
                 }
+
+                // 3. Docker Build és Push (Bejelentkezéssel)
                 container('docker') {
-                    sh "docker build -t takacsdanii/bevdevops-backend:latest -f ./HelloBackend/Dockerfile ."
-                    sh "docker push takacsdanii/bevdevops-backend:latest"
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        // Biztonságos bejelentkezés
+                        sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin"
+                        
+                        // Frontend image építés és feltöltés
+                        sh "docker build -t takacsdanii/bevdevops-frontend-dev:latest -f ./HelloFrontend/Dockerfile.dev ."
+                        sh "docker push takacsdanii/bevdevops-frontend-dev:latest"
+                        
+                        // Backend image építés és feltöltés
+                        sh "docker build -t takacsdanii/bevdevops-backend:latest -f ./HelloBackend/Dockerfile ."
+                        sh "docker push takacsdanii/bevdevops-backend:latest"
+                    }
                 }
             }
         }
+
         stage('CD - Deploy to Dev') {
             steps {
                 container('helm-kubectl') {
@@ -68,10 +76,38 @@ spec:
                         helm upgrade --install dev-stack ./k8s/bevdevops-chart \
                         --namespace dev \
                         --set frontend.imagePullPolicy=Always \
+                        --set backend.imagePullPolicy=Always \
                         -f ./k8s/bevdevops-chart/values.yaml
                     """
                 }
             }
+        }
+
+        stage('Promote to Prod?') {
+            input {
+                message "Mehet az élesítés a Production környezetbe?"
+                ok "Igen, mehet!"
+            }
+            steps {
+                container('helm-kubectl') {
+                    sh """
+                        helm upgrade --install prod-stack ./k8s/bevdevops-chart \
+                        --namespace prod \
+                        --set frontend.imagePullPolicy=Always \
+                        --set backend.imagePullPolicy=Always \
+                        -f ./k8s/bevdevops-chart/values-prod.yaml
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "A CI/CD folyamat sikeresen befejeződött!"
+        }
+        failure {
+            echo "Hiba történt a folyamat során. Ellenőrizd a logokat!"
         }
     }
 }
