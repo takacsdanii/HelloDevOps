@@ -12,6 +12,15 @@ pipeline {
             }
         }
 
+        stage('Build & Test') {
+            steps {
+                dir('HelloBackend') {
+                    bat "dotnet build"
+                    bat "dotnet test"
+                }
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
@@ -20,24 +29,21 @@ pipeline {
             }
         }
 
-        stage('Build & Test') {
+        stage('Quality Gate') {
             steps {
-                // Backend build
-                dir('HelloBackend') {
-                    bat "dotnet build"
-                    bat "dotnet test"
-                }
-                // Frontend build
-                dir('HelloFrontend') {
-                    bat "npm install"
-                    bat "npm run build"
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
 
         stage('Deploy (Docker Compose)') {
             steps {
-                bat "docker-compose up -d --build"
+                bat """
+                docker-compose down
+                docker-compose build --no-cache
+                docker-compose up -d
+                """
                 echo "Alkalmazás sikeresen elindítva!"
             }
         }

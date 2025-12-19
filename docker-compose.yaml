@@ -11,6 +11,9 @@ services:
         - sql-data:/var/opt/mssql
 
   hello-backend:
+    build:
+      context: ./HelloBackend
+      dockerfile: Dockerfile
     image: hello-backend:latest
     container_name: hello-backend-container
     environment:
@@ -21,6 +24,9 @@ services:
       - hello-db
 
   hello-frontend:
+    build:
+      context: ./HelloFrontend
+      dockerfile: Dockerfile
     image: hello-frontend:latest
     container_name: hello-frontend-container
     ports:
