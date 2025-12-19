@@ -20,11 +20,13 @@ export class AppComponent {
   constructor(private messageService: MessageService) { }
 
   ngOnInit() {
+    console.log('init fired');
     this.getGreetings();
     this.getMessages();
   }
 
   private getGreetings() {
+    console.log('greetings fired');
     this.messageService.getGreetings().subscribe(greeting => {
       this.greetingText = greeting;
       console.log('Greeting received:', greeting);
@@ -32,6 +34,7 @@ export class AppComponent {
   }
 
   private getMessages() {
+    console.log('getMessages fired');
     this.messageService.getMessages().subscribe(mes => this.messages = mes);
   }
 
