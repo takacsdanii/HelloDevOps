@@ -1,8 +1,0 @@
-apiVersion: v2
-name: bevdevops-chart
-description: Full-stack alkalmazás (MSSQL, .NET Backend, Angular Frontend)
-type: application
-
-version: 1.0.0
-
-appVersion: "1.0.0"

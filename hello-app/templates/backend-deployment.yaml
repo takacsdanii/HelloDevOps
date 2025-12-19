@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.backend.name }}"
+spec:
+  replicas: {{ .Values.backend.replicas }}  
+  selector:
+    matchLabels:
+      app: "{{ .Values.backend.label }}"
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.backend.label }}"
+        tier: backend
+    spec:
+      containers:
+      - name: "{{ .Values.backend.name }}-container"
+        image: "{{ .Values.backend.image }}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: {{ .Values.backend.port }}
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "{{ .Values.backend.environment }}"
+        - name: ConnectionStrings__DefaultConnection
+          value: "Server={{ .Values.db.name }};Database=MyDatabase;User Id=sa;Password={{ .Values.db.password }};TrustServerCertificate=True;"

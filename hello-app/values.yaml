@@ -1,0 +1,23 @@
+db:
+  name: hello-db
+  label: hello-db
+  image: mcr.microsoft.com/mssql/server:2022-latest
+  port: 1433
+  password: Dani2002
+
+backend:
+  name: hello-backend
+  label: hello-backend-server
+  image: hello-backend:latest
+  port: 8080
+  environment: Production
+  replicas: 1
+
+frontend:
+  name: hello-frontend
+  label: hello-frontend-server
+  image: hello-frontend:latest
+  port: 80
+  environment: Production
+  apiUrl: http://localhost:8080
+  replicas: 1
