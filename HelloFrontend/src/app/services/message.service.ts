@@ -37,6 +37,7 @@ export class MessageService {
 
   public getGreetings(): Observable<string> {
     const url = `${this.baseUrl}/greetings`;
-    return this.http.get<string>(url);
+    return this.http.get(url, { responseType: 'text' });
   }
+
 }

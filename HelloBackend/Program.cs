@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "MyCorsPolicy",
         policy =>
         {
-            policy.WithOrigins("MyCorsPolicy")
+            policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -35,8 +35,8 @@ var app = builder.Build();
 // Comment out for local running
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
-    db.Database.Migrate();
+   var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+   db.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.
