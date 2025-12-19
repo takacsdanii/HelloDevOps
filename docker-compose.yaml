@@ -27,3 +27,6 @@ services:
       - "8081:80"
     depends_on:
       - hello-backend
+
+volumes:
+  sql-data:
