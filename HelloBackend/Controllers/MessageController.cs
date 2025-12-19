@@ -29,6 +29,12 @@ namespace HelloBackend.Controllers
             return _messageService.GetMessages(message);
         }
 
+        [HttpGet("greetings")]
+        public IActionResult GetGreetings()
+        {
+            return Ok("Greetings from MessageController!");
+        }
+
         [HttpPost]
         public IActionResult AddMessage(string text)
         {

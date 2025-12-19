@@ -15,11 +15,18 @@ import { FormsModule, NgModel } from '@angular/forms';
 export class AppComponent {
   public messages?: Message[];
   public newMessageText: string = '';
+  public greetingText: string = '';
 
   constructor(private messageService: MessageService) { }
 
   ngOnInit() {
     this.getMessages();
+  }
+
+  private getGreetings() {
+    this.messageService.getGreetings().subscribe(greeting => {
+      this.greetingText = greeting;
+    });
   }
 
   private getMessages() {

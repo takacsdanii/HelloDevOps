@@ -34,4 +34,9 @@ export class MessageService {
     const url = `${this.baseUrl}?id=${id}`;
     return this.http.delete<void>(url);
   }
+
+  public getGreetings(): Observable<string> {
+    const url = `${this.baseUrl}/greetings`;
+    return this.http.get<string>(url);
+  }
 }
