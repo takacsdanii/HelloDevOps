@@ -12,8 +12,8 @@ services:
 
   hello-backend:
     build:
-      context: ./HelloBackend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: HelloBackend/Dockerfile
     image: hello-backend:latest
     container_name: hello-backend-container
     environment:
@@ -25,8 +25,8 @@ services:
 
   hello-frontend:
     build:
-      context: ./HelloFrontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: HelloFrontend/Dockerfile
     image: hello-frontend:latest
     container_name: hello-frontend-container
     ports:
